@@ -35,13 +35,13 @@ python emoji_cipher.py
 http://localhost:5000
 ```
 
-## 🛠️ Tecnologías
+## Tecnologías
 
 - Python + Flask
 - HTML/CSS/JavaScript
 - Unicode Zero Width Characters
 
-## 📝 Ejemplo
+## Ejemplo
 
 ```
 Texto: "Hola"
