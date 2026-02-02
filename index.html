@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cifrador de Emojis 😎</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('fondo.jpg') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff8c00;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #ff8c00;
+        }
+
+        .tab.active {
+            color: #ff8c00;
+            border-bottom-color: #ff8c00;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ff8c00;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        button.action-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6600 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button.action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 140, 0, 0.3);
+        }
+
+        button.action-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            border-left: 4px solid #ff8c00;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .result h3 {
+            color: #ff8c00;
+            margin-bottom: 10px;
+        }
+
+        .result-text {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .copy-btn:hover {
+            background: #ff6600;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Cifrador de Emojis</h1>
+        <p class="subtitle">Oculta mensajes secretos en emojis usando esteganografía</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('cifrar')">🔒 Cifrar</button>
+            <button class="tab" onclick="switchTab('descifrar')">🔓 Descifrar</button>
+        </div>
+
+        <!-- TAB CIFRAR -->
+        <div id="cifrar" class="tab-content active">
+            <div class="input-group">
+                <label>Emoji a usar:</label>
+                <input type="text" id="emoji-cifrar" placeholder="😎 (o deja vacío para usar 😎)" maxlength="100">
+            </div>
+
+            <div class="input-group">
+                <label>Mensaje secreto:</label>
+                <textarea id="texto-cifrar" placeholder="Escribe tu mensaje secreto aquí..."></textarea>
+            </div>
+
+            <button class="action-btn" onclick="cifrarMensaje()">🔒 Cifrar Mensaje</button>
+
+            <div id="resultado-cifrar" class="result">
+                <h3>✅ Emoji Cifrado:</h3>
+                <div class="result-text" id="emoji-resultado"></div>
+                <button class="copy-btn" onclick="copiarTexto('emoji-resultado', event)">📋 Copiar</button>
+            </div>
+        </div>
+
+        <!-- TAB DESCIFRAR -->
+        <div id="descifrar" class="tab-content">
+            <div class="input-group">
+                <label>Emoji cifrado:</label>
+                <textarea id="emoji-descifrar" placeholder="Pega aquí el emoji cifrado..."></textarea>
+            </div>
+
+            <button class="action-btn" onclick="descifrarMensaje()">🔓 Descifrar Mensaje</button>
+
+            <div id="resultado-descifrar" class="result">
+                <h3>🔓 Mensaje Descifrado:</h3>
+                <div class="result-text" id="mensaje-resultado"></div>
+                <button class="copy-btn" onclick="copiarTexto('mensaje-resultado', event)">📋 Copiar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Convertir texto a binario
+        function textoABinario(texto) {
+            return texto.split('').map(char => {
+                return char.charCodeAt(0).toString(2).padStart(8, '0');
+            }).join('');
+        }
+
+        // Convertir binario a texto
+        function binarioATexto(binario) {
+            let texto = '';
+            for (let i = 0; i < binario.length; i += 8) {
+                const byte = binario.substr(i, 8);
+                if (byte.length === 8) {
+                    texto += String.fromCharCode(parseInt(byte, 2));
+                }
+            }
+            return texto;
+        }
+
+        // Cifrar mensaje usando el backend Python
+        async function cifrarMensaje() {
+            const emojiInput = document.getElementById('emoji-cifrar').value.trim();
+            const emoji = emojiInput || '😎';
+            const texto = document.getElementById('texto-cifrar').value.trim();
+
+            if (!texto) {
+                alert('❌ Debes escribir un mensaje para cifrar');
+                return;
+            }
+
+            try {
+                const response = await fetch('/cifrar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ texto, emoji })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('emoji-resultado').textContent = data.resultado;
+                    document.getElementById('resultado-cifrar').classList.add('show');
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Error de conexión: ' + error.message);
+            }
+        }
+
+        // Descifrar mensaje usando el backend Python
+        async function descifrarMensaje() {
+            const emojiCifrado = document.getElementById('emoji-descifrar').value.trim();
+
+            if (!emojiCifrado) {
+                alert('❌ Debes pegar un emoji cifrado');
+                return;
+            }
+
+            try {
+                const response = await fetch('/descifrar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ emoji_cifrado: emojiCifrado })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('mensaje-resultado').textContent = data.mensaje;
+                    document.getElementById('resultado-descifrar').classList.add('show');
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Error de conexión: ' + error.message);
+            }
+        }
+
+        // Cambiar entre tabs
+        function switchTab(tabName) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Mostrar tab seleccionado
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Ocultar resultados
+            document.querySelectorAll('.result').forEach(result => {
+                result.classList.remove('show');
+            });
+        }
+
+        // Copiar texto al portapapeles
+        function copiarTexto(elementId, event) {
+            const texto = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(texto).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copiado!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Error al copiar: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>
